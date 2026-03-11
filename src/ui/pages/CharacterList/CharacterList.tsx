@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCharacters } from '../../../application/hooks/useCharacters';
 import { useDebounce } from '../../../application/hooks/useDebounce';
@@ -9,8 +9,7 @@ import { FilterBar } from '../../components/organisms/FilterBar';
 export const CharacterList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   
-  // Sincronización con URL 
-  const page = Number(searchParams.get('page')) || 1;
+  // Extraemos del router los filtros (Si volvimos atrás, persisten los query params)
   const nameQuery = searchParams.get('name') || '';
   const statusQuery = searchParams.get('status') || '';
   const speciesQuery = searchParams.get('species') || '';
@@ -21,26 +20,48 @@ export const CharacterList = () => {
   const debouncedName = useDebounce(searchTerm, 500); 
   const debouncedSpecies = useDebounce(speciesTerm, 500);
 
-  const { data, isLoading, isError, error, refetch } = useCharacters(page, debouncedName, statusQuery, debouncedSpecies);
+  // Hook Infinito que ahora trae React Query (con su propia Cache)
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    error, 
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useCharacters(debouncedName, statusQuery, debouncedSpecies);
 
-  // Actualizar URL cuando cambian filtros
+  // Intersection Observer para disparar Infinite Scroll
+  const observerTarget = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    setSearchParams({ 
-      name: debouncedName, 
-      status: statusQuery, 
-      species: debouncedSpecies,
-      page: '1' 
-    });
-  }, [debouncedName, statusQuery, debouncedSpecies, setSearchParams]);
+    const target = observerTarget.current;
+    if (!target) return;
 
-  const handlePageChange = (newPage: number) => {
-    setSearchParams({ 
-      name: debouncedName, 
-      status: statusQuery, 
-      species: debouncedSpecies,
-      page: String(newPage) 
-    });
-  };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Cuando tocamos el final, pedimos más a React Query
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    observer.observe(target);
+    return () => observer.unobserve(target);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  // Sincronizar URL para evitar recargas perdidas
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (debouncedName) params.set('name', debouncedName);
+    if (statusQuery) params.set('status', statusQuery);
+    if (debouncedSpecies) params.set('species', debouncedSpecies);
+    
+    setSearchParams(params, { replace: true });
+  }, [debouncedName, statusQuery, debouncedSpecies, setSearchParams]);
 
   if (isError) return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 text-white">
@@ -48,6 +69,9 @@ export const CharacterList = () => {
       <button onClick={() => refetch()} className="mt-4 bg-green-600 px-6 py-2 rounded-lg">Reintentar</button>
     </div>
   );
+
+  // data.pages es un array con todas las páginas cargadas. Lo aplanamos.
+  const allCharacters = data?.pages.flatMap(page => page.results) || [];
 
   return (
     <main className="min-h-screen bg-zinc-950 p-6 md:p-12">
@@ -66,14 +90,21 @@ export const CharacterList = () => {
         species={speciesTerm}
         onNameChange={setSearchTerm} 
         onSpeciesChange={setSpeciesTerm}
-        onStatusChange={(val) => setSearchParams({ name: debouncedName, status: val, species: debouncedSpecies, page: '1' })} 
+        onStatusChange={(val) => {
+          setSearchParams(params => {
+            if (val) params.set('status', val);
+            else params.delete('status');
+            return params;
+          }, { replace: true });
+        }} 
       />
 
-      {isLoading ? (
+      {/* Cargando por primera vez */}
+      {isLoading && allCharacters.length === 0 ? (
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => <CharacterCardSkeleton key={i} />)}
+          {Array.from({ length: 8 }).map((_, i) => <CharacterCardSkeleton key={`skeleton-initial-${i}`} />)}
         </div>
-      ) : data?.results.length === 0 ? (
+      ) : allCharacters.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 text-zinc-700">
              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
@@ -85,36 +116,23 @@ export const CharacterList = () => {
         </div>
       ) : (
         <>
-          <CharacterGrid characters={data?.results || []} />
+          <CharacterGrid characters={allCharacters} />
           
-          <div className="mt-20 flex justify-center items-center gap-8">
-            <button 
-              disabled={!data?.info.prev} 
-              onClick={() => handlePageChange(page - 1)}
-              className="group flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-8 py-4 rounded-2xl text-white font-bold transition-all hover:border-green-500/50 hover:bg-green-500/5 disabled:opacity-20 disabled:cursor-not-allowed"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 transition-transform group-hover:-translate-x-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-              </svg>
-              Anterior
-            </button>
-
-            <div className="flex flex-col items-center">
-              <span className="text-zinc-500 text-xs font-black uppercase tracking-widest mb-1">Dimensión</span>
-              <span className="text-2xl font-black text-green-400 leading-none">{page} / {data?.info.pages}</span>
+          {/* Skeletons para Infinite Scroll Loading */}
+          {isFetchingNextPage && (
+            <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => <CharacterCardSkeleton key={`skeleton-next-${i}`} />)}
             </div>
+          )}
 
-            <button 
-              disabled={!data?.info.next} 
-              onClick={() => handlePageChange(page + 1)}
-              className="group flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-8 py-4 rounded-2xl text-white font-bold transition-all hover:border-green-500/50 hover:bg-green-500/5 disabled:opacity-20 disabled:cursor-not-allowed"
-            >
-              Siguiente
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 transition-transform group-hover:translate-x-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </button>
-          </div>
+          {/* Observer Target (Invisible). Aquí es donde detecta si llegamos al final */}
+          <div ref={observerTarget} className="h-10 w-full mt-4" />
+          
+          {!hasNextPage && allCharacters.length > 0 && (
+            <div className="mt-16 text-center text-zinc-600 font-bold tracking-widest uppercase">
+              Fin de la dimensión. No hay más especímenes.
+            </div>
+          )}
         </>
       )}
     </main>

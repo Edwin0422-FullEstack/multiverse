@@ -1,49 +1,86 @@
-# Multiverse Explorer 🛸
+<div align="center">
+  <img src="./public/splash_bg.png" alt="Rick and Morty Explorer Splash" width="400"/>
+  <h1>🌌 Multiverse Explorer</h1>
+  <p>Una aplicación <strong>Premium</strong> para explorar, buscar y clasificar los infinitos especímenes del multiverso de Rick and Morty.</p>
+</div>
 
-Una aplicación premium para explorar el multiverso de Rick and Morty, construida con una arquitectura limpia y moderna.
+---
 
-## 🚀 Cómo correr el proyecto
+## 🚀 Instalación y Despliegue
 
-1.  **Clonar el repositorio** e instalar dependencias:
+La aplicación fue construida utilizando `pnpm` para un manejo de paquetes ultra-rápido.
+
+1. **Clonar e instalar dependencias**:
     ```bash
     pnpm install
     ```
-2.  **Iniciar el servidor de desarrollo**:
+2. **Iniciar la simulación del multiverso (Dev Server)**:
     ```bash
     pnpm run dev
     ```
-3.  **Abrir en el navegador**: `http://localhost:5173`
+3. **Explorar**: Abre tu navegador en `http://localhost:5173`
 
-## 🧠 Decisiones Técnicas
+---
 
-*   **Arquitectura Limpia (Hexagonal Soft)**: El proyecto se divide en:
-    *   **Core**: Modelos de datos e interfaces (Entidades).
-    *   **Application**: Lógica de negocio, hooks personalizados (`useCharacters`, `useFavorites`).
-    *   **Infrastructure**: Implementaciones de red (`apiClient`) y repositorios de datos.
-    *   **UI**: Componentes atómicos (Atoms, Molecules, Organisms) y Páginas.
-*   **React Query**: Utilizado para la gestión de estado asíncrono, caché inteligente y reintentos automáticos.
-*   **Debounce (300-500ms)**: Implementado en los inputs de búsqueda para evitar "spam" a la API mientras el usuario escribe, optimizando el rendimiento y el consumo de datos.
-*   **Persistencia Local**: Los favoritos se sincronizan automáticamente con `localStorage` mediante un hook reactivo, permitiendo que la lista persista entre sesiones.
-*   **Skeletons Modernos**: Implementación de *Shimmer Skeletons* para mejorar la percepción de velocidad (LCP/FCP) y evitar saltos de layout durante la carga.
+## 💎 Características Premium (UI/UX)
 
-## 🛠️ Tecnologías Usadas
+- **Diseño Glassmorphism**: Interfaz con efectos de cristal borroso (`backdrop-blur`), elevaciones 3D e iluminaciones estilo "neón radiactivo".
+- **Splash Screen Cinemático**: Animaciones SVG, pulse effects y barras de sincronización al arrancar la app.
+- **Micro-interacciones**: Skeletons animados con efecto "Shimmer" de alto rendimiento para mejorar los Core Web Vitals (FCP/LCP).
+- **Cards Dinámicas 3D**: Tarjetas de personajes con sombras envolventes y transformaciones al pasar el ratón.
+- **Empty States Inteligentes**: Respuestas visuales limpias (cero errores) cuando una búsqueda en una dimensión está vacía.
 
-*   React + Vite + TypeScript
-*   Tailwind CSS (Styling)
-*   React Router v6 (Navegación)
-*   TanStack Query v5 (Data Fetching)
+---
 
-## 🔮 ¿Qué haría diferente con más tiempo?
+## 🧠 Arquitectura y Excelencia Técnica
 
-1.  **Tests Unitarios y de Integración**: Añadiría Vitest y React Testing Library para asegurar que la lógica de los repositorios y hooks sea robusta.
-2.  **Infinite Scroll**: En lugar de paginación tradicional, implementaría un scroll infinito para una experiencia más fluida ("mobile-first").
-3.  **Filtros Avanzados**: Añadiría filtros por Género y Origen, además de un sistema de autocompletado para las especies.
-4.  **Internacionalización (i18n)**: Implementaría soporte para múltiples idiomas (Inglés/Español).
-5.  **PWA**: Convertiría la app en una Progressive Web App para que pueda instalarse y funcionar offline (con los datos cacheados).
+El proyecto ha sido rigurosamente estructurado bajo los principios de **Clean Architecture (Hexagonal)**:
 
-## ♿ Accesibilidad (A11y)
+- 📂 **Core**: Modelos de datos estandarizados e interfaces (`Entities`).
+- 📂 **Application**: Lógica de negocio orquestada en Custom Hooks (`useCharacters`, `useFavorites`, `useDebounce`).
+- 📂 **Infrastructure**: Capa de acceso a datos (Patrón Repository) y Fetch API client abstraído.
+- 📂 **UI**: Diseño dirigido por componentes modulares (Atomic Design: Atoms, Molecules, Organisms, Pages).
 
-*   **Semantic HTML**: Uso de tags como `main`, `article`, `section`, `h1-h3`.
-*   **Alt Tags**: Todas las imágenes de personajes tienen descripciones dinámicas.
-*   **Labels**: Los inputs y botones tienen etiquetas claras o aria-labels cuando es necesario.
-*   **Keyboard Nav**: Navegación funcional mediante la tecla `Tab` y estilos de `focus` visibles.
+### Diferenciadores Técnicos (Bonus Implementados)
+
+✨ **1. React Query (Advanced Caching & Memoization)**  
+Se configuró `TanStack Query` con `staleTime` y `gcTime` prolongados. Si el usuario navega a un detalle o a sus favoritos y presiona "Atrás", la información se sirve de la memoria caché en **0ms**. Evitamos el re-fetch innecesario.
+
+✨ **2. Infinite Scroll Navis**  
+Se reemplazó la anticuada paginación de botones por un hook de `useInfiniteQuery` sumado a un `IntersectionObserver` nativo. Los personajes cargan proactivamente a medida que te desplazas hacia el fondo del abismo interdimensional.
+
+✨ **3. Debounce Engine**  
+Busca en tiempo real sin sobrecargar la API. Los inputs retrasan inteligentemente la búsqueda automatizada `500ms` después de la última pulsación, ahorrando ancho de banda masivo.
+
+✨ **4. Persistencia Continua**  
+El hook de favoritos intercepta interacciones y sincroniza directamente con `localStorage` de forma reactiva, asegurando que los especímenes marcados sigan ahí al recargar.
+
+✨ **5. Batched Episode Requests**  
+La vista de detalle de personaje toma las 50 URLs separadas que devuelve la API y las empaqueta en **1 sola petición de array** (`/episode/[1,2,3...50]`) hacia al backend, bajando el tiempo de carga dramáticamente.
+
+---
+
+## 🧪 Testing Automatizado
+
+La aplicación cuenta con cobertura de test unitarios implementados con **Vitest + React Testing Library**.
+
+Para correr las pruebas:
+```bash
+npx vitest run
+```
+
+Pruebas maestras incluidas:
+- ✅ **List renders**: Evalúa (con una respuesta interceptada/mockeada) que React Query y la UI pueden pintar y resolver los componentes en el DOM.
+- ✅ **Favorites persists**: Verifica y aísla la lógica computacional del Hook, confirmando el almacenamiento nativo en `localStorage`.
+
+---
+
+## ♿ Accesibilidad (A11y) & Performance
+
+- **Semantic HTML**: Jerarquía impecable (`main`, `article`, `header`, `h1-h2`).
+- **Focus States**: Botones y Cards accesibles vía Tabulador `Tab` con feedback visual táctico.
+- **Image Optimization**: Manejo dinámico de Skeleton a Imagen, con etiquetas alt auto-descriptivas.
+- **Responsive-First**: CSS Grid matemático adaptándose desde móviles hasta pantallas ultra panorámicas.
+
+---
+> *"Get in the ship, Morty! We've got a React app to build!"* - Rick Sanchez

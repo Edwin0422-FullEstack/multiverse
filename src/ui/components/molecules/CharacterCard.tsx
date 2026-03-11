@@ -13,16 +13,21 @@ export const CharacterCard = ({ character }: Props) => {
   const fav = isFavorite(character.id);
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-800/80 shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:border-green-500/50 hover:shadow-[0_8px_30px_rgba(74,222,128,0.15)]">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/5 bg-zinc-900/50 backdrop-blur-md transition-all duration-500 hover:-translate-y-3 hover:rotate-1 hover:shadow-[0_20px_50px_rgba(34,197,94,0.2)]">
       
+      {/* EFECTO DE LUZ RADIACTIVA TRASERA */}
+      <div className="absolute -inset-0.5 bg-gradient-to-br from-green-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
+
       {/* Botón de Favorito Rápido */}
       <button 
         onClick={(e) => {
           e.stopPropagation();
           toggleFavorite(character.id);
         }}
-        className={`absolute top-4 right-4 z-10 p-2.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-xl ${
-          fav ? 'bg-red-500 text-white' : 'bg-black/40 text-white/50 hover:bg-black/60 hover:text-white'
+        className={`absolute top-6 right-6 z-20 p-3 rounded-2xl backdrop-blur-xl transition-all duration-300 shadow-2xl border ${
+          fav 
+            ? 'bg-red-500 text-white border-red-400' 
+            : 'bg-black/40 text-white/50 border-white/10 hover:bg-green-500/20 hover:text-green-400 hover:border-green-500/50'
         }`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill={fav ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -32,31 +37,41 @@ export const CharacterCard = ({ character }: Props) => {
 
       {/* Contenedor Clickable para Detalle */}
       <div 
-        className="cursor-pointer flex-1 flex flex-col"
+        className="relative z-10 cursor-pointer flex-1 flex flex-col p-4"
         onClick={() => navigate(`/characters/${character.id}`)}
       >
-        <div className="relative aspect-square w-full overflow-hidden">
+        {/* IMAGEN CON MÁSCARA Y EFECTO */}
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.5rem] bg-zinc-800 shadow-inner">
           <img
             src={character.image}
-            alt={`Imagen de ${character.name}`}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            alt={character.name}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-800/90 via-transparent to-transparent" />
+          {/* Capas de Luz */}
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+          <div className="absolute inset-0 border-[8px] border-zinc-900/50 rounded-[1.5rem] pointer-events-none" />
         </div>
 
-        <div className="flex flex-1 flex-col justify-between p-5">
+        {/* INFO */}
+        <div className="flex-1 p-4 pb-2 space-y-4">
           <div>
-            <h2 className="truncate text-2xl font-black text-white transition-colors group-hover:text-green-400">
+            <h2 className="text-2xl font-black text-white leading-tight transition-colors group-hover:text-green-400">
               {character.name}
             </h2>
-            
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-3 flex items-center justify-between">
               <StatusBadge status={character.status} />
-              <span className="rounded-full border border-zinc-600 bg-zinc-900/50 px-3 py-1 text-xs font-bold tracking-wider text-zinc-400 uppercase">
-                {character.species}
-              </span>
+              <div className="flex flex-col items-end">
+                 <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Specie</span>
+                 <span className="text-xs font-bold text-zinc-300">{character.species}</span>
+              </div>
             </div>
+          </div>
+
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          
+          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500">
+             <span>ID: #{character.id.toString().padStart(3, '0')}</span>
+             <span className="text-green-500 opacity-0 group-hover:opacity-100 transition-opacity">Ver Detalle →</span>
           </div>
         </div>
       </div>

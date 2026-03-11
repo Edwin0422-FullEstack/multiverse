@@ -1,16 +1,21 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { characterRepository } from '../../infrastructure/repositories/character.repository';
 
-export const useCharacters = (page: number, name: string, status: string, species: string) => {
-  return useQuery({
-    // La 'queryKey' es vital: si cambia cualquier filtro, React Query dispara la petición.
-    queryKey: ['characters', { page, name, status, species }],
-    queryFn: () => characterRepository.getCharacters(page, name, status, species),
-    
-    // Bonus de Performance: Mantiene los datos anteriores mientras carga los nuevos [cite: 380]
-    placeholderData: (previousData) => previousData,
-    
-    // No re-petición innecesaria si los datos tienen menos de 5 minutos
+export const useCharacters = (name: string, status: string, species: string) => {
+  return useInfiniteQuery({
+    queryKey: ['characters', { name, status, species }],
+    // React Query pasará automáticamente el pageParam
+    queryFn: ({ pageParam }) => characterRepository.getCharacters(pageParam, name, status, species),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      // Extraemos el número de página de la URL 'next' proporcionada por la API
+      if (!lastPage.info.next) return undefined;
+      const url = new URL(lastPage.info.next);
+      const nextPage = url.searchParams.get('page');
+      return nextPage ? Number(nextPage) : undefined;
+    },
     staleTime: 1000 * 60 * 5, 
+    // Mantenemos la caché (memoization) por 10 minutos para evitar re-fetch al volver atrás
+    gcTime: 1000 * 60 * 10,
   });
 };
