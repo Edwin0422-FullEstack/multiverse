@@ -4,15 +4,20 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCharacters } from '../../../application/hooks/useCharacters';
 import { useDebounce } from '../../../application/hooks/useDebounce';
 import { useColumns } from '../../../application/hooks/useColumns';
+import { useTypewriter } from '../../../application/hooks/useTypewriter';
 import { CharacterCard } from '../../components/molecules/CharacterCard';
 import { CharacterCardSkeleton } from '../../components/molecules/CharacterCardSkeleton';
 import { FilterBar } from '../../components/organisms/FilterBar';
 
-const ROW_HEIGHT = 480; // Estimación más cercana al tamaño real
-const GAP = 32;         // gap-8 = 2rem = 32px
+const ROW_HEIGHT = 580; // Más alto para que quepa todo el reverso desahogado
+const GAP = 60;         // Más separación para el efecto 3D
 
 export const CharacterList = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Efecto de escritura para el título
+  const title = "RICK & MORTY";
+  const { displayText } = useTypewriter(title, 120);
 
   const nameQuery    = searchParams.get('name')    || '';
   const statusQuery  = searchParams.get('status')  || '';
@@ -75,20 +80,20 @@ export const CharacterList = () => {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Actualizar URL de forma silenciosa e imperativa
+  // Actualizar URL usando el hook oficial de React Router para sincronización perfecta
   const updateURL = useCallback((name: string, status: string, species: string) => {
     const params = new URLSearchParams();
     if (name)    params.set('name',    name);
     if (status)  params.set('status',  status);
     if (species) params.set('species', species);
-    // Cambiamos replaceState nativo para no trigger router resets de scroll (v7)
-    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
-    window.history.replaceState({}, '', newUrl);
-  }, []);
+    setSearchParams(params, { replace: true });
+  }, [setSearchParams]);
 
   const handleNameChange    = (val: string) => { setSearchTerm(val);  updateURL(val, statusQuery, speciesTerm); };
   const handleSpeciesChange = (val: string) => { setSpeciesTerm(val); updateURL(debouncedName, statusQuery, val); };
-  const handleStatusChange  = (val: string) => { updateURL(debouncedName, val, speciesTerm); };
+  const handleStatusChange  = (val: string) => { 
+    updateURL(debouncedName, val, speciesTerm); 
+  };
 
   if (isError && allCharacters.length === 0) return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 text-white text-center">
@@ -101,7 +106,7 @@ export const CharacterList = () => {
 
   return (
     // CONTENEDOR RAIZ: Pantalla completa, sin scroll nativo (flex layout)
-    <div className="h-[100dvh] w-full flex flex-col bg-black galaxy-bg overflow-hidden relative">
+    <div className="h-[100dvh] w-full flex flex-col bg-black main-gradient-bg galaxy-bg overflow-hidden relative">
       
       {/* Nebulosa decorativa (fija al fondo) */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
@@ -109,9 +114,10 @@ export const CharacterList = () => {
       </div>
 
       {/* HEADER FIJO: Mejora masivamente el UX en scroll infinitos y arregla el offset del virtualizer */}
-      <header className="relative z-20 shrink-0 px-6 pt-10 md:px-12 md:pt-12 pb-[1px] border-b border-green-500/10 bg-black/40 backdrop-blur-md">
-        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6">
-          EXPLORA EL <span className="text-green-400">MULTIVERSO</span>
+      <header className="relative z-20 shrink-0 px-6 pt-6 md:px-12 md:pt-8 pb-2 border-b border-green-500/10 bg-black/40 backdrop-blur-md flex flex-col items-center text-center">
+        <h1 className="text-3xl md:text-5xl font-black mb-4 font-orbitron min-h-[40px] md:min-h-[60px] max-w-4xl mx-auto leading-none acid-text tracking-widest">
+          {displayText}
+          <span className="animate-pulse text-green-400 ml-4">|</span>
         </h1>
         
         <FilterBar
@@ -168,7 +174,7 @@ export const CharacterList = () => {
                       width: '100%',
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
-                    className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-8"
+                    className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 py-8"
                   >
                     {rowItems.map((item, colIdx) =>
                       item === 'skeleton'
