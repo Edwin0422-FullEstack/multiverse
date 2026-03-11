@@ -8,7 +8,8 @@ export const characterRepository = {
   getCharacters: async (
     page: number = 1, 
     name: string = '', 
-    status: string = ''
+    status: string = '',
+    species: string = ''
   ): Promise<CharacterResponse> => {
     
     const params = new URLSearchParams({
@@ -17,6 +18,7 @@ export const characterRepository = {
 
     if (name) params.append('name', name);
     if (status) params.append('status', status);
+    if (species) params.append('species', species);
 
     try {
       return await apiClient.get<CharacterResponse>(`/character/?${params.toString()}`);

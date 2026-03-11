@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# Multiverse Explorer 🛸
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Una aplicación premium para explorar el multiverso de Rick and Morty, construida con una arquitectura limpia y moderna.
 
-Currently, two official plugins are available:
+## 🚀 Cómo correr el proyecto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1.  **Clonar el repositorio** e instalar dependencias:
+    ```bash
+    pnpm install
+    ```
+2.  **Iniciar el servidor de desarrollo**:
+    ```bash
+    pnpm run dev
+    ```
+3.  **Abrir en el navegador**: `http://localhost:5173`
 
-## React Compiler
+## 🧠 Decisiones Técnicas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*   **Arquitectura Limpia (Hexagonal Soft)**: El proyecto se divide en:
+    *   **Core**: Modelos de datos e interfaces (Entidades).
+    *   **Application**: Lógica de negocio, hooks personalizados (`useCharacters`, `useFavorites`).
+    *   **Infrastructure**: Implementaciones de red (`apiClient`) y repositorios de datos.
+    *   **UI**: Componentes atómicos (Atoms, Molecules, Organisms) y Páginas.
+*   **React Query**: Utilizado para la gestión de estado asíncrono, caché inteligente y reintentos automáticos.
+*   **Debounce (300-500ms)**: Implementado en los inputs de búsqueda para evitar "spam" a la API mientras el usuario escribe, optimizando el rendimiento y el consumo de datos.
+*   **Persistencia Local**: Los favoritos se sincronizan automáticamente con `localStorage` mediante un hook reactivo, permitiendo que la lista persista entre sesiones.
+*   **Skeletons Modernos**: Implementación de *Shimmer Skeletons* para mejorar la percepción de velocidad (LCP/FCP) y evitar saltos de layout durante la carga.
 
-## Expanding the ESLint configuration
+## 🛠️ Tecnologías Usadas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+*   React + Vite + TypeScript
+*   Tailwind CSS (Styling)
+*   React Router v6 (Navegación)
+*   TanStack Query v5 (Data Fetching)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🔮 ¿Qué haría diferente con más tiempo?
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1.  **Tests Unitarios y de Integración**: Añadiría Vitest y React Testing Library para asegurar que la lógica de los repositorios y hooks sea robusta.
+2.  **Infinite Scroll**: En lugar de paginación tradicional, implementaría un scroll infinito para una experiencia más fluida ("mobile-first").
+3.  **Filtros Avanzados**: Añadiría filtros por Género y Origen, además de un sistema de autocompletado para las especies.
+4.  **Internacionalización (i18n)**: Implementaría soporte para múltiples idiomas (Inglés/Español).
+5.  **PWA**: Convertiría la app en una Progressive Web App para que pueda instalarse y funcionar offline (con los datos cacheados).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## ♿ Accesibilidad (A11y)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+*   **Semantic HTML**: Uso de tags como `main`, `article`, `section`, `h1-h3`.
+*   **Alt Tags**: Todas las imágenes de personajes tienen descripciones dinámicas.
+*   **Labels**: Los inputs y botones tienen etiquetas claras o aria-labels cuando es necesario.
+*   **Keyboard Nav**: Navegación funcional mediante la tecla `Tab` y estilos de `focus` visibles.
