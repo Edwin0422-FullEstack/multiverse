@@ -1,5 +1,5 @@
 import { apiClient } from '../http/apiClient';
-import type { CharacterResponse } from '../../core/models/character/model';
+import type { Character, CharacterResponse } from '../../core/models/character/model';
 
 export const characterRepository = {
   /**
@@ -11,8 +11,6 @@ export const characterRepository = {
     status: string = ''
   ): Promise<CharacterResponse> => {
     
-    // Construimos los parámetros de la URL de forma inteligente
-    // URLSearchParams limpia automáticamente los parámetros vacíos si no los enviamos
     const params = new URLSearchParams({
       page: page.toString(),
     });
@@ -20,8 +18,28 @@ export const characterRepository = {
     if (name) params.append('name', name);
     if (status) params.append('status', status);
 
-    // Hacemos la petición usando nuestro cliente y le decimos que la respuesta 
-    // debe respetar la Interfaz CharacterResponse que creamos antes
-    return apiClient.get<CharacterResponse>(`/character/?${params.toString()}`);
+    try {
+      return await apiClient.get<CharacterResponse>(`/character/?${params.toString()}`);
+    } catch (error) {
+      // La API de Rick and Morty devuelve 404 cuando no hay resultados para un filtro.
+      // Manejamos esto devolviendo una estructura vacía en lugar de un error.
+      if (error instanceof Error && error.message.includes('404')) {
+        return {
+          info: { count: 0, pages: 0, next: null, prev: null },
+          results: []
+        };
+      }
+      throw error;
+    }
+  },
+
+  getCharacterById: async (id: number): Promise<Character> => {
+    return apiClient.get<Character>(`/character/${id}`);
+  },
+
+  getCharactersByIds: async (ids: number[]): Promise<Character[]> => {
+    if (ids.length === 0) return [];
+    const result = await apiClient.get<Character | Character[]>(`/character/${ids.join(',')}`);
+    return Array.isArray(result) ? result : [result];
   }
 };

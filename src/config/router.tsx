@@ -1,7 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { SplashScreen } from '../ui/pages/SplashScreen/SplashScreen';
 import { Welcome } from '../ui/pages/Welcome/Welcome';
-import { CharacterList } from '../ui/pages/CharacterList/CharacterList'; // Importamos el nuevo componente
+import { CharacterList } from '../ui/pages/CharacterList/CharacterList';
+import { CharacterDetail } from '../ui/pages/CharacterDetail/CharacterDetail';
+import { Favorites } from '../ui/pages/Favorites/Favorites';
 
 export const router = createBrowserRouter([
   {
@@ -10,11 +12,19 @@ export const router = createBrowserRouter([
   },
   {
     path: '/welcome',
-    element: <Welcome />, // Aquí asignamos la pantalla de diálogo interactivo
+    element: <Welcome />,
   },
   {
-    path: '/characters', // La ruta obligatoria del reto [cite: 263, 285]
-    element: <CharacterList />, // El listado real
+    path: '/characters',
+    element: <CharacterList />,
+  },
+  {
+    path: '/characters/:id',
+    element: <CharacterDetail />,
+  },
+  {
+    path: '/favorites',
+    element: <Favorites />,
   },
   {
     path: '*',
