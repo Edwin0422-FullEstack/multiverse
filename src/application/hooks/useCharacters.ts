@@ -15,7 +15,10 @@ export const useCharacters = (name: string, status: string, species: string) => 
       return nextPage ? Number(nextPage) : undefined;
     },
     staleTime: 1000 * 60 * 5, 
-    // Mantenemos la caché (memoization) por 10 minutos para evitar re-fetch al volver atrás
+    // Mantenemos la caché por 10 minutos
     gcTime: 1000 * 60 * 10,
+    // Bonus: Reintento automático en caso de fallo de red ("Failed to fetch")
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
