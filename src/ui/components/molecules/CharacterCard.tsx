@@ -13,7 +13,7 @@ export const CharacterCard = ({ character }: Props) => {
   const fav = isFavorite(character.id);
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/5 bg-zinc-900/50 backdrop-blur-md transition-all duration-500 hover:-translate-y-3 hover:rotate-1 hover:shadow-[0_20px_50px_rgba(34,197,94,0.2)]">
+    <article className="animate-fade-in group relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/5 bg-zinc-900/50 backdrop-blur-md transition-all duration-500 hover:-translate-y-3 hover:rotate-1 hover:shadow-[0_20px_50px_rgba(34,197,94,0.2)]">
       
       {/* EFECTO DE LUZ RADIACTIVA TRASERA */}
       <div className="absolute -inset-0.5 bg-gradient-to-br from-green-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
