@@ -16,7 +16,7 @@ export const Favorites = () => {
   });
 
   return (
-    <main className="min-h-screen bg-black galaxy-bg text-white relative overflow-hidden">
+    <main className="h-screen w-full bg-black main-gradient-bg galaxy-bg text-white relative overflow-y-auto overflow-x-hidden custom-scrollbar">
       {/* Nebulosa decorativa */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
         <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-b from-green-500/10 to-transparent" />
