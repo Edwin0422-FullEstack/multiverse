@@ -85,30 +85,36 @@ a, button, [role="button"] {
 }
 
 /* ESTILOS DEL SCROLLBAR (Tema Rick and Morty - Neon Edition) */
+/* Aplicado globalmente al body y específicamente a .custom-scrollbar */
+::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar {
-  width: 14px; /* Un poco más ancho para que se vea bien */
+  width: 14px;
 }
 
+::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.8);
   border-left: 1px solid rgba(74, 222, 128, 0.2);
 }
 
+::-webkit-scrollbar-thumb,
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(74, 222, 128, 0.6); /* Más opaco por defecto */
+  background: rgba(74, 222, 128, 0.6);
   border-radius: 10px;
   border: 3px solid transparent;
   background-clip: padding-box;
-  box-shadow: inset 0 0 10px rgba(74, 222, 128, 0.5); /* Brillo interno radiactivo */
+  box-shadow: inset 0 0 10px rgba(74, 222, 128, 0.5);
 }
 
+::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(74, 222, 128, 0.9); /* Brilla más al pasar el mouse */
+  background: rgba(74, 222, 128, 0.9);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 @supports not selector(::-webkit-scrollbar) {
+  html,
   .custom-scrollbar {
     scrollbar-color: #4ade80 #000000;
     scrollbar-width: auto;
@@ -121,6 +127,6 @@ html, body {
 }
 
 body {
-  @apply bg-zinc-950 text-white selection:bg-green-500/30 selection:text-green-300 custom-scrollbar;
+  @apply bg-zinc-950 text-white selection:bg-green-500/30 selection:text-green-300;
   overflow-y: auto;
 }
