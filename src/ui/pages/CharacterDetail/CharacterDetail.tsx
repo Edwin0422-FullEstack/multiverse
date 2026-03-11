@@ -38,16 +38,21 @@ export const CharacterDetail = () => {
   const fav = isFavorite(character.id);
 
   return (
-    <main className="min-h-screen bg-zinc-950 p-6 md:p-12 text-white">
-      <div className="max-w-6xl mx-auto">
+    <main className="min-h-screen bg-black galaxy-bg text-white relative overflow-x-hidden">
+      {/* Nebulosa decorativa */}
+      <div className="pointer-events-none absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-b from-green-500/10 to-transparent" />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto p-6 md:p-12">
         <button 
           onClick={() => navigate(-1)} 
-          className="mb-8 flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
+          className="mb-8 flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors font-bold"
         >
-          ← Volver
+          ← Volver al Multiverso
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start pb-20">
           {/* Imagen y Acción */}
           <div className="relative group">
             <div className="overflow-hidden rounded-3xl border-2 border-zinc-800 shadow-2xl transition-all duration-500 group-hover:border-green-500/50">
