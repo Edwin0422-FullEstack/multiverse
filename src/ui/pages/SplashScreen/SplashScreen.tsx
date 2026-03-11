@@ -1,4 +1,3 @@
-// src/ui/pages/SplashScreen/SplashScreen.tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,48 +7,64 @@ export const SplashScreen = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate('/welcome');
-    }, 4000); // 4 segundos para disfrutar el efecto
+    }, 5000); 
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-zinc-950">
+    <div className="relative h-screen w-screen overflow-hidden bg-black flex items-center justify-center">
       
-      {/* CAPA 1: Brillo de fondo estático */}
-      <div className="absolute h-[500px] w-[500px] rounded-full bg-green-500/10 blur-[120px]" />
+      {/* FONDO CINEMATOGRÁFICO CON GRADIENTES Y PARTÍCULAS */}
+      <div className="absolute inset-0 bg-[url('/splash_bg.png')] bg-cover bg-center opacity-60 scale-105 animate-[pulse_8s_infinite]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black" />
+      
+      {/* EFECTO DE LUZ RADIACTIVA DETRÁS */}
+      <div className="absolute h-[600px] w-[600px] rounded-full bg-green-500/10 blur-[150px] animate-pulse" />
 
-      {/* CAPA 2: Portal Externo (Giro lento) */}
-      <div className="absolute h-[400px] w-[400px] animate-slow-spin rounded-full border-t-4 border-l-4 border-green-400 opacity-40 blur-sm" />
-
-      {/* CAPA 3: Núcleo del Portal (Efecto radiactivo) */}
-      <div className="relative flex items-center justify-center">
-        {/* Anillo de energía principal */}
-        <div className="h-64 w-64 animate-reverse-spin rounded-full bg-gradient-to-tr from-green-400 via-emerald-500 to-cyan-400 p-1 shadow-[0_0_50px_rgba(74,222,128,0.6)]">
-          <div className="h-full w-full rounded-full bg-zinc-950" />
-        </div>
+      {/* CONTENEDOR PRINCIPAL */}
+      <div className="relative z-10 flex flex-col items-center max-w-lg px-6 text-center">
         
-        {/* Destello central */}
-        <div className="absolute h-10 w-10 animate-pulse rounded-full bg-white blur-md" />
+        {/* LOGO Animado (Rick & Morty Style) */}
+        <div className="mb-12 animate-[bounce_3s_infinite]">
+          <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-green-300 via-green-500 to-emerald-700 drop-shadow-[0_0_20px_rgba(34,197,94,0.6)] select-none">
+            Rick <span className="text-4xl md:text-5xl align-middle mx-[-10px] text-green-400">&</span> Morty
+          </h1>
+          <div className="mt-[-15px] text-zinc-400 font-black tracking-[1em] text-xs md:text-sm uppercase opacity-50">
+            Explorer Dimension
+          </div>
+        </div>
+
+        {/* PORTAL SIMBOLIZADO */}
+        <div className="relative w-48 h-48 mb-16">
+          <div className="absolute inset-0 animate-slow-spin rounded-full border-t-2 border-l-2 border-green-500 opacity-50 blur-[2px]" />
+          <div className="absolute inset-4 animate-reverse-spin rounded-full border-b-2 border-r-2 border-emerald-500 opacity-40 blur-[1px]" />
+          <div className="absolute inset-0 flex items-center justify-center">
+             <div className="w-4 h-4 rounded-full bg-white shadow-[0_0_20px_white] animate-pulse" />
+          </div>
+        </div>
+
+        {/* BARRA DE PROGRESO PREMIUM */}
+        <div className="w-64 space-y-3">
+          <div className="flex justify-between text-[10px] font-black uppercase text-green-400 tracking-widest opacity-80">
+            <span>Sincronizando Realidad</span>
+            <span className="animate-pulse">Cargando...</span>
+          </div>
+          <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden p-[1px] border border-zinc-800/50">
+            <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full animate-[loading_5s_ease-in-out_forwards] shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+          </div>
+        </div>
       </div>
 
-      {/* TEXTO INFORMATIVO */}
-      <div className="absolute bottom-16 flex flex-col items-center z-10">
-        <h1 className="text-4xl font-black tracking-[0.2em] text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] uppercase">
-          Multiverso <span className="text-green-400">Explorer</span>
-        </h1>
-        
-        <div className="mt-6 flex items-center gap-3">
-          <div className="h-1 w-12 rounded-full bg-gradient-to-r from-transparent to-green-400" />
-          <p className="text-sm font-bold uppercase tracking-widest text-green-400 animate-pulse">
-            Sincronizando realidad...
-          </p>
-          <div className="h-1 w-12 rounded-full bg-gradient-to-l from-transparent to-green-400" />
-        </div>
-      </div>
-
-      {/* Toque de estilo PinkTech [cite: 1] */}
-      <div className="absolute top-8 right-8 text-[10px] font-mono text-zinc-700 uppercase tracking-[0.5em]">
-        System Status: Stable
+      {/* DETALLES TECH */}
+      <div className="absolute bottom-8 left-8 flex gap-8">
+         <div className="flex flex-col">
+            <span className="text-zinc-700 text-[10px] font-black uppercase tracking-widest">Dimension</span>
+            <span className="text-zinc-500 text-xs font-mono">C-137</span>
+         </div>
+         <div className="flex flex-col border-l border-zinc-800 pl-8">
+            <span className="text-zinc-700 text-[10px] font-black uppercase tracking-widest">Status</span>
+            <span className="text-green-500 text-xs font-mono animate-pulse">Stable</span>
+         </div>
       </div>
     </div>
   );
